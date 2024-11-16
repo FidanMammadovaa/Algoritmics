@@ -146,5 +146,12 @@ button {
 }
 
 
+.todos-list li {
+    cursor: grab;
+    transition: opacity 0.2s;
+}
 
-
+.todos-list li:active {
+    cursor: grabbing;
+    border: 1px solid #833AE0;
+}

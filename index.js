@@ -21,9 +21,7 @@ closeIconForInput.addEventListener("click", (e) => {
 function toggleIcons() {
     icon1.classList.toggle('hidden')
     icon2.classList.toggle('hidden')
-
     isDescending = !isDescending
-
     sortTodos()
     renderTodos()
 }
@@ -31,13 +29,13 @@ function toggleIcons() {
 addIcon.addEventListener("click", (e) => {
     e.preventDefault()
     inputContainer.style.display = "flex"
-})
+});
 
 addButton.addEventListener("click", (e) => {
     e.preventDefault()
     addTodo(todoInput.value)
-    renderTodos();
-})
+    renderTodos()
+});
 
 function addTodo(content) {
     if (content) {
@@ -64,17 +62,27 @@ function renderTodos() {
 
     todos.forEach((todo, index) => {
         let li = document.createElement("li")
-        li.innerHTML = `${index + 1} ${todo} 
-                         <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
-                    <path d="M6 6L14 14" stroke="#C4C4C4" />
-                    <path d="M6 14L14 6" stroke="#C4C4C4" />
-                </svg>`
-        
+        li.setAttribute("draggable", "true")
+        li.dataset.index = index
+
+        li.innerHTML = `
+            ${index + 1} ${todo}
+            <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
+                <path d="M6 6L14 14" stroke="#C4C4C4" />
+                <path d="M6 14L14 6" stroke="#C4C4C4" />
+            </svg>
+        `
+
         li.querySelector(".close-icon").addEventListener("click", () => {
             deleteTodo(index)
         })
+
+
+        li.addEventListener("dragstart", handleDragStart)
+        li.addEventListener("dragover", handleDragOver)
+        li.addEventListener("drop", handleDrop)
 
         todosList.appendChild(li)
     })
@@ -83,4 +91,31 @@ function renderTodos() {
 function deleteTodo(index) {
     todos.splice(index, 1)
     renderTodos()
+}
+
+let draggedIndex = null
+
+function handleDragStart(event) {
+    draggedIndex = event.target.dataset.index
+    event.dataTransfer.effectAllowed = "move"
+    event.target.style.opacity = "0.5"
+}
+
+function handleDragOver(event) {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = "move"
+}
+
+function handleDrop(event) {
+    event.preventDefault()
+    event.target.style.opacity = "1"
+
+    const droppedIndex = event.target.dataset.index;
+    if (draggedIndex !== null && draggedIndex !== droppedIndex) {
+        const temp = todos[draggedIndex]
+        todos[draggedIndex] = todos[droppedIndex]
+        todos[droppedIndex] = temp
+
+        renderTodos()
+    }
 }
