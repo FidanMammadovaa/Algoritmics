@@ -66,7 +66,7 @@ function renderTodos() {
         li.dataset.index = index
 
         li.innerHTML = `
-            ${index + 1} ${todo}
+            ${index + 1} ${todo.slice(0, 30) + '...'}
             <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
