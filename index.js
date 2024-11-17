@@ -65,15 +65,28 @@ function renderTodos() {
         li.setAttribute("draggable", "true")
         li.dataset.index = index
 
-        li.innerHTML = `
-            ${index + 1} ${todo.slice(0, 30) + '...'}
+        if (todo.length >= 20) {
+            li.innerHTML = `
+            ${index + 1} ${todo.slice(0, 20) + '...'}
             <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
-                <path d="M6 6L14 14" stroke="#C4C4C4" />
-                <path d="M6 14L14 6" stroke="#C4C4C4" />
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
+            <path d="M6 6L14 14" stroke="#C4C4C4" />
+            <path d="M6 14L14 6" stroke="#C4C4C4" />
             </svg>
-        `
+            `
+        }
+        else {
+            li.innerHTML = `
+            ${index + 1} ${todo}
+            <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="19" height="19" rx="9.5" stroke="#C4C4C4" />
+            <path d="M6 6L14 14" stroke="#C4C4C4" />
+            <path d="M6 14L14 6" stroke="#C4C4C4" />
+            </svg>
+            `
+        }
 
         li.querySelector(".close-icon").addEventListener("click", () => {
             deleteTodo(index)
