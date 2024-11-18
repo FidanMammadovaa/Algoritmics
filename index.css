@@ -15,7 +15,7 @@ body {
     flex-direction: column;
     max-height: 80vh;
     align-items: center;
-    width: 350px;
+    width: 400px;
     border: 2px solid #C4C4C4;
     border-radius: 5px;
 }
@@ -32,6 +32,7 @@ body {
     height: 100%;
     padding: 10px 20px;
     min-width: 300px;
+    max-width: 340px;
     justify-content: space-between;
     gap: 10px;
     overflow-y: auto;
@@ -154,4 +155,18 @@ button {
 .todos-list li:active {
     cursor: grabbing;
     border: 1px solid #833AE0;
+}
+
+.todo-item{
+    display: flex;
+}
+
+.todo-content{
+    display: flex;
+    gap: 5px;
+}
+
+.todo-text{
+    margin-right: 35px;
+    overflow-wrap: anywhere;
 }
