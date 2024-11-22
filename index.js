@@ -22,22 +22,12 @@ function toggleClassActive(items) {
 
             getBaseAndTargetCode()
 
-            if (item.closest('.from-container')) {
-                const conversionResult = await getConversionResult(baseCode, targetCode, fromInput.value)
-                if (conversionResult !== null) {
-                    toInput.value = conversionResult.toFixed(3)
-                }
-                else{
-                    toInput.value = fromInput.value
-                }
-            } else if (item.closest('.to-container')) {
-                const conversionResult = await getConversionResult(targetCode, baseCode, toInput.value)
-                if (conversionResult !== null) {
-                    fromInput.value = conversionResult.toFixed(3)
-                }
-                else{
-                    fromInput.value = toInput.value
-                }
+            const conversionResult = await getConversionResult(baseCode, targetCode, fromInput.value)
+            if (conversionResult !== null) {
+                toInput.value = conversionResult.toFixed(3)
+            }
+            else {
+                toInput.value = fromInput.value
             }
 
             const exchangeRateBase = await getExchangeRates(baseCode, targetCode)
@@ -58,7 +48,7 @@ fromInput.addEventListener("input", async () => {
         if (conversionResult !== null) {
             toInput.value = conversionResult.toFixed(3)
         }
-        else{
+        else {
             toInput.value = amount
         }
     }
@@ -73,7 +63,7 @@ toInput.addEventListener("input", async () => {
         if (conversionResult !== null) {
             fromInput.value = conversionResult.toFixed(3)
         }
-        else{
+        else {
             fromInput.value = amount
         }
     }
