@@ -40,6 +40,15 @@ function toggleClassActive(items) {
 }
 
 fromInput.addEventListener("input", async () => {
+    fromInput.value = fromInput.value.replace(',', '.');
+
+    fromInput.value = fromInput.value.replace(/[^0-9.]/g, '');
+
+    if ((fromInput.value.match(/\./g) || []).length > 1) {
+        fromInput.value = fromInput.value.replace(/\.(?=.*\.)/, '');
+    }
+
+
     const amount = fromInput.value
 
     if (baseCode && targetCode && amount) {
@@ -52,9 +61,25 @@ fromInput.addEventListener("input", async () => {
             toInput.value = amount
         }
     }
+
+    if (amount === '') {
+        fromInput.value = ''
+        toInput.value = ''
+    }
+
 })
 
 toInput.addEventListener("input", async () => {
+
+    toInput.value = toInput.value.replace(',', '.');
+
+    toInput.value = toInput.value.replace(/[^0-9.]/g, '');
+
+    if ((toInput.value.match(/\./g) || []).length > 1) {
+        toInput.value = toInput.value.replace(/\.(?=.*\.)/, '');
+    }
+
+
     const amount = toInput.value
 
     if (baseCode && targetCode && amount) {
@@ -67,24 +92,29 @@ toInput.addEventListener("input", async () => {
             fromInput.value = amount
         }
     }
+    if (amount === '') {
+        fromInput.value = ''
+        toInput.value = ''
+    }
 })
 
 async function getConversionResult(baseCode, targetCode, amount) {
     try {
-        const response = await fetch(
-            `https://v6.exchangerate-api.com/v6/6eb73cf1c1ecadf0c0b2e2be/pair/${baseCode}/${targetCode}/${amount}`
-        )
-        const data = await response.json()
+        if (amount) {
+            const response = await fetch(
+                `https://v6.exchangerate-api.com/v6/6eb73cf1c1ecadf0c0b2e2be/pair/${baseCode}/${targetCode}/${amount}`
+            )
+            const data = await response.json()
 
-        if (data["conversion_result"] !== undefined) {
-            hideConnectionStatus()
-            return data["conversion_result"]
-        } else {
-            throw new Error("Invalid API Response")
+            if (data["conversion_result"] !== undefined) {
+                hideConnectionStatus()
+                return data["conversion_result"]
+            } else {
+                throw new Error("Invalid API Response")
+            }
         }
     } catch (err) {
         console.error("Error fetching conversion data:", err)
-        showConnectionStatus()
         return null
     }
 }
@@ -104,7 +134,6 @@ async function getExchangeRates(baseCode, targetCode) {
         }
     } catch (err) {
         console.error("Error fetching conversion data:", err)
-        showConnectionStatus()
         return defaultExchangeRate
     }
 }
@@ -130,6 +159,43 @@ function showConnectionStatus() {
 function hideConnectionStatus() {
     connectionStatusElement.style.display = 'none'
 }
+
+window.addEventListener('offline', () => {
+    showConnectionStatus()
+    console.warn('You are offline')
+})
+
+window.addEventListener('online', () => {
+    hideConnectionStatus()
+    console.info('You are back online')
+})
+
+
+window.addEventListener('DOMContentLoaded', async () => {
+    getBaseAndTargetCode()
+
+    if (baseCode && targetCode) {
+        try {
+            const conversionResult = await getConversionResult(baseCode, targetCode, fromInput.value)
+            if (conversionResult !== null) {
+                toInput.value = conversionResult.toFixed(3)
+            } else {
+                toInput.value = fromInput.value
+            }
+
+            const exchangeRateBase = await getExchangeRates(baseCode, targetCode)
+            exchangeRateFrom.textContent = `1 ${baseCode} = ${exchangeRateBase || defaultExchangeRate} ${targetCode}`
+
+            const exchangeRateTarget = await getExchangeRates(targetCode, baseCode);
+            exchangeRateTo.textContent = `1 ${targetCode} = ${exchangeRateTarget || defaultExchangeRate} ${baseCode}`
+        } catch (error) {
+            console.error('Error during initial data fetch:', error)
+        }
+    } else {
+        console.warn('Base code or target code is missing. Please check your setup.')
+    }
+})
+
 
 toggleClassActive(currencyItemsFrom)
 toggleClassActive(currencyItemsTo)
