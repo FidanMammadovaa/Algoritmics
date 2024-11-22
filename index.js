@@ -5,14 +5,16 @@ const navItems = document.querySelectorAll('.nav-list .nav-item');
 const fromInput = document.querySelector(".from-container .amount-input");
 const toInput = document.querySelector(".to-container .amount-input");
 
-let baseCode = "";
-let targetCode = "";
+let baseCode = ""
+let targetCode = ""
 
 let exchangeRateFrom = document.querySelector(".from-container .bottom-container .label");
 let exchangeRateTo = document.querySelector(".to-container .bottom-container .label");
 
 const connectionStatusElement = document.querySelector('.connection-status')
-const defaultExchangeRate = 1;
+const defaultExchangeRate = 1
+let lastChangedInput = "from"
+
 
 function toggleClassActive(items) {
     items.forEach(item => {
@@ -22,15 +24,28 @@ function toggleClassActive(items) {
 
             getBaseAndTargetCode()
 
-            const conversionResult = await getConversionResult(baseCode, targetCode, fromInput.value)
-            if (conversionResult !== null) {
-                toInput.value = conversionResult.toFixed(3)
+            if (lastChangedInput === "from") {
+
+                const conversionResult = await getConversionResult(baseCode, targetCode, fromInput.value)
+                if (conversionResult !== null) {
+                    toInput.value = conversionResult.toFixed(3)
+                }
+                else {
+                    toInput.value = fromInput.value
+                }
             }
-            else {
-                toInput.value = fromInput.value
+            else if (lastChangedInput === "to") {
+                const conversionResult = await getConversionResult(targetCode, baseCode, toInput.value)
+                if (conversionResult !== null) {
+                    fromInput.value = conversionResult.toFixed(3)
+                }
+                else {
+                    fromInput.value = toInput.value
+                }
             }
 
             const exchangeRateBase = await getExchangeRates(baseCode, targetCode)
+            console.log(exchangeRateBase)
             exchangeRateFrom.textContent = `1 ${baseCode} = ${exchangeRateBase || defaultExchangeRate} ${targetCode}`
 
             const exchangeRateTarget = await getExchangeRates(targetCode, baseCode);
@@ -40,15 +55,15 @@ function toggleClassActive(items) {
 }
 
 fromInput.addEventListener("input", async () => {
-    fromInput.value = fromInput.value.replace(',', '.');
+    fromInput.value = fromInput.value.replace(',', '.')
 
-    fromInput.value = fromInput.value.replace(/[^0-9.]/g, '');
+    fromInput.value = fromInput.value.replace(/[^0-9.]/g, '')
 
     if ((fromInput.value.match(/\./g) || []).length > 1) {
-        fromInput.value = fromInput.value.replace(/\.(?=.*\.)/, '');
+        fromInput.value = fromInput.value.replace(/\.(?=.*\.)/, '')
     }
 
-
+    lastChangedInput = "from"
     const amount = fromInput.value
 
     if (baseCode && targetCode && amount) {
@@ -71,12 +86,14 @@ fromInput.addEventListener("input", async () => {
 
 toInput.addEventListener("input", async () => {
 
-    toInput.value = toInput.value.replace(',', '.');
+    toInput.value = toInput.value.replace(',', '.')
 
-    toInput.value = toInput.value.replace(/[^0-9.]/g, '');
+    toInput.value = toInput.value.replace(/[^0-9.]/g, '')
+
+    lastChangedInput = "to"
 
     if ((toInput.value.match(/\./g) || []).length > 1) {
-        toInput.value = toInput.value.replace(/\.(?=.*\.)/, '');
+        toInput.value = toInput.value.replace(/\.(?=.*\.)/, '')
     }
 
 
@@ -102,7 +119,7 @@ async function getConversionResult(baseCode, targetCode, amount) {
     try {
         if (amount) {
             const response = await fetch(
-                `https://v6.exchangerate-api.com/v6/6eb73cf1c1ecadf0c0b2e2be/pair/${baseCode}/${targetCode}/${amount}`
+                `https://v6.exchangerate-api.com/v6/dd5b0c6a97dd24dc2cd52d10/pair/${baseCode}/${targetCode}/${amount}`
             )
             const data = await response.json()
 
@@ -122,7 +139,7 @@ async function getConversionResult(baseCode, targetCode, amount) {
 async function getExchangeRates(baseCode, targetCode) {
     try {
         const response = await fetch(
-            `https://v6.exchangerate-api.com/v6/6eb73cf1c1ecadf0c0b2e2be/latest/${baseCode}`
+            `https://v6.exchangerate-api.com/v6/dd5b0c6a97dd24dc2cd52d10/latest/${baseCode}`
         )
         const data = await response.json()
 
