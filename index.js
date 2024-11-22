@@ -15,6 +15,8 @@ const connectionStatusElement = document.querySelector('.connection-status')
 const defaultExchangeRate = 1
 let lastChangedInput = "from"
 
+const burgerMenu = document.querySelector(".burger-menu")
+let dropdown
 
 function toggleClassActive(items) {
     items.forEach(item => {
@@ -213,6 +215,34 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
+
+burgerMenu.addEventListener("click", () => {
+    if (!dropdown) {
+        dropdown = document.createElement("div")
+        dropdown.className = "dropdown-menu";
+
+        const navList = document.createElement("ul")
+        navList.className = "dropdown-list"
+
+        const navItems = ["БАНК", "БИЗНЕС", "ИНВЕСТИЦИИ", "СТРАХОВАНИЕ", "МОБАЙЛ", "ПУТЕШЕСТВИЯ", "РАЗВЛЕЧЕНИЯ"]
+        navItems.forEach((item) => {
+            const listItem = document.createElement("li")
+            listItem.className = "dropdown-item"
+            listItem.textContent = item
+            navList.appendChild(listItem)
+        })
+        dropdown.appendChild(navList)
+        document.body.appendChild(dropdown)
+    }
+
+    dropdown.classList.toggle("active")
+})
+
+document.addEventListener("click", (event) => {
+    if (dropdown && !dropdown.contains(event.target) && !burgerMenu.contains(event.target)) {
+        dropdown.classList.remove("active");
+    }
+});
 
 toggleClassActive(currencyItemsFrom)
 toggleClassActive(currencyItemsTo)
